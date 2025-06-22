@@ -9,6 +9,11 @@ dist/
 web-build/
 expo-env.d.ts
 
+# React Native build artifacts
+android/
+ios/
+.build/
+
 # Native
 .kotlin/
 *.orig.*
@@ -25,6 +30,16 @@ expo-env.d.ts
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+*.log
+
+# IDEs / editors
+.vscode/
+*.swp
+*.swo
+
+# Gradle cache
+.gradle/
+build/
 
 # macOS
 .DS_Store
