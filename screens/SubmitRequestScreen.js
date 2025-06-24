@@ -1,8 +1,15 @@
+// screens/SubmitRequestScreen.js
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  StyleSheet
+} from 'react-native';
 import { AuthContext } from '../contexts/AuthContext';
-import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import app from '../firebaseConfig';
 
 export default function SubmitRequestScreen({ navigation }) {
   const [title, setTitle] = useState('');
@@ -19,6 +26,15 @@ export default function SubmitRequestScreen({ navigation }) {
     }
 
     try {
+      // Dynamic import of Firestore for Hermes compatibility
+      const {
+        getFirestore,
+        collection,
+        addDoc,
+        serverTimestamp
+      } = await import('firebase/firestore');
+      const db = getFirestore(app);
+
       await addDoc(collection(db, 'requests'), {
         userId: user.uid,
         title: trimmedTitle,

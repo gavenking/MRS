@@ -1,17 +1,25 @@
+// screens/HomeScreen.js
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { db } from '../firebase';
-import { addDoc, collection } from 'firebase/firestore';
+import app from '../firebaseConfig';
 
 export default function HomeScreen({ navigation }) {
-
   const handleTestWrite = async () => {
     try {
+      const {
+        getFirestore,
+        collection,
+        addDoc,
+        serverTimestamp
+      } = await import('firebase/firestore');
+
+      const db = getFirestore(app);
       await addDoc(collection(db, 'requests'), {
         userId: 'testUser',
         message: 'Test Firestore Write',
-        createdAt: new Date(),
+        createdAt: serverTimestamp(),
       });
+
       Alert.alert('Success', 'Test document written to Firestore');
     } catch (err) {
       console.error('Firestore write error:', err);
@@ -25,13 +33,13 @@ export default function HomeScreen({ navigation }) {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('Admin Panel')}
+        onPress={() => navigation.navigate('AdminPanel')}
       >
         <Text style={styles.buttonText}>Admin Panel</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.button, { marginTop: 16, backgroundColor: '#28a745' }]}
+        style={[styles.button, styles.successButton]}
         onPress={handleTestWrite}
       >
         <Text style={styles.buttonText}>Test Firestore Write</Text>
@@ -58,6 +66,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 6,
+  },
+  successButton: {
+    marginTop: 16,
+    backgroundColor: '#28a745',
   },
   buttonText: {
     color: '#ffffff',

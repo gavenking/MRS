@@ -1,3 +1,4 @@
+// screens/AdminPanelScreen.js
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -6,15 +7,24 @@ export default function AdminPanelScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Admin Panel</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Request List')}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('RequestList')}
+      >
         <Text style={styles.buttonText}>View Requests</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Manage Users')}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('ManageUsers')}
+      >
         <Text style={styles.buttonText}>Manage Users</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('System Settings')}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('SystemSettings')}
+      >
         <Text style={styles.buttonText}>System Settings</Text>
       </TouchableOpacity>
     </View>

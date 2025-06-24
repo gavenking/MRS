@@ -1,19 +1,29 @@
+// screens/ManageUsersScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator
+} from 'react-native';
+import app from '../firebaseConfig';
 
 export default function ManageUsersScreen() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    (async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'users'));
-        const userList = querySnapshot.docs.map(doc => ({
+        // Dynamic import of Firestore to satisfy Hermes
+        const { getFirestore, collection, getDocs } = await import('firebase/firestore');
+        const db = getFirestore(app);
+
+        const snapshot = await getDocs(collection(db, 'users'));
+        const userList = snapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data(),
+          ...doc.data()
         }));
         setUsers(userList);
       } catch (error) {
@@ -21,31 +31,33 @@ export default function ManageUsersScreen() {
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchUsers();
+    })();
   }, []);
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
-      <Text style={styles.name}>{item.email || 'Unnamed'}</Text>
-      <Text style={styles.role}>{item.role || 'Unknown'}</Text>
+      <Text style={styles.name}>{item.email ?? 'Unnamed'}</Text>
+      <Text style={styles.role}>{item.role ?? 'Unknown'}</Text>
     </View>
   );
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#007BFF" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Manage Users</Text>
-      {loading ? (
-        <ActivityIndicator size="large" color="#007BFF" />
-      ) : (
-        <FlatList
-          data={users}
-          keyExtractor={item => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.list}
-        />
-      )}
+      <FlatList
+        data={users}
+        keyExtractor={item => item.id}
+        renderItem={renderItem}
+        contentContainerStyle={styles.list}
+      />
     </View>
   );
 }
@@ -65,6 +77,11 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingBottom: 20,
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   card: {
     backgroundColor: '#fff',

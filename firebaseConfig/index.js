@@ -1,8 +1,7 @@
-// firebase/index.js
+// firebaseConfig.js
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
 
+// Your Firebase project configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBZecYcJM8y1hoxlhKOWB_EqaOll4o7tiQ",
   authDomain: "theapp-b1af6.firebaseapp.com",
@@ -12,9 +11,9 @@ const firebaseConfig = {
   appId: "1:940657776835:web:3123c6ee23f8bc9954aa76",
 };
 
-// ✅ Hermes-safe Firebase singleton
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
+// Initialize or retrieve the existing app instance
+const app = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApp();
 
-export { auth, db };
+export default app;

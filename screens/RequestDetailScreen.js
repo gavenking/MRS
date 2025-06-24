@@ -1,3 +1,4 @@
+// screens/RequestDetailScreen.js
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
@@ -12,13 +13,16 @@ export default function RequestDetailScreen({ route }) {
         <Text style={styles.label}>Title:</Text>
         <Text style={styles.value}>{request.title || 'No Title'}</Text>
 
+        <Text style={styles.label}>Description:</Text>
+        <Text style={styles.value}>{request.description || 'No Description'}</Text>
+
         <Text style={styles.label}>Submitted By:</Text>
-        <Text style={styles.value}>{request.submittedBy || 'Unknown'}</Text>
+        <Text style={styles.value}>{request.userId || 'Unknown'}</Text>
 
         <Text style={styles.label}>Status:</Text>
         <Text
           style={
-            request.status === 'Pending'
+            request.status === 'pending'
               ? styles.valuePending
               : styles.value
           }

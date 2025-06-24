@@ -1,3 +1,4 @@
+// screens/RequestListScreen.js
 import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
@@ -8,27 +9,37 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { AuthContext } from '../contexts/AuthContext';
-import { db } from '../firebase';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import app from '../firebaseConfig';
 
 export default function RequestListScreen({ navigation }) {
   const { user, role } = useContext(AuthContext);
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]   = useState(true);
 
   useEffect(() => {
-    const fetchRequests = async () => {
+    (async () => {
       try {
-        let q;
-        if (role === 'admin') {
-          q = query(collection(db, 'requests'), orderBy('timestamp', 'desc'));
-        } else {
-          q = query(
-            collection(db, 'requests'),
-            where('userId', '==', user.uid),
-            orderBy('timestamp', 'desc')
-          );
-        }
+        // Dynamically import Firestore for Hermes
+        const {
+          getFirestore,
+          collection,
+          query,
+          where,
+          orderBy,
+          getDocs
+        } = await import('firebase/firestore');
+        const db = getFirestore(app);
+
+        const q = role === 'admin'
+          ? query(
+              collection(db, 'requests'),
+              orderBy('timestamp', 'desc')
+            )
+          : query(
+              collection(db, 'requests'),
+              where('userId', '==', user.uid),
+              orderBy('timestamp', 'desc')
+            );
 
         const snapshot = await getDocs(q);
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -38,9 +49,7 @@ export default function RequestListScreen({ navigation }) {
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchRequests();
+    })();
   }, [user, role]);
 
   if (loading) {
@@ -76,20 +85,20 @@ export default function RequestListScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#f9f9f9' },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  emptyText: { textAlign: 'center', marginTop: 40, color: '#666' },
-  card: {
+  container:   { flex: 1, padding: 16, backgroundColor: '#f9f9f9' },
+  center:      { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyText:   { textAlign: 'center', marginTop: 40, color: '#666' },
+  card:        {
     backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 2,
+    padding:         16,
+    borderRadius:    8,
+    marginBottom:    12,
+    shadowColor:     '#000',
+    shadowOpacity:   0.05,
+    shadowOffset:    { width: 0, height: 2 },
+    shadowRadius:    4,
+    elevation:       2,
   },
-  title: { fontSize: 16, fontWeight: '600', marginBottom: 6 },
-  meta: { marginTop: 8, color: '#888', fontSize: 12 },
+  title:       { fontSize: 16, fontWeight: '600', marginBottom: 6 },
+  meta:        { marginTop: 8, color: '#888', fontSize: 12 },
 });
