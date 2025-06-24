@@ -9,36 +9,46 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Use require() so Hermes doesn't choke and to avoid async pitfalls
-    try {
-      const authModule = require('firebase/auth');
-      const auth = authModule.getAuth(app);
-      const unsubscribe = authModule.onAuthStateChanged(auth, (usr) => {
-        setUser(usr);
+    let unsubscribe;
+    (async () => {
+      try {
+        // Set up persistent Auth instance dynamically
+        const AsyncStorageModule = await import('@react-native-async-storage/async-storage');
+        const AsyncStorage = AsyncStorageModule.default;
+        const authModule = await import('firebase/auth');
+        const { initializeAuth, getReactNativePersistence, onAuthStateChanged } = authModule;
+
+        const auth = initializeAuth(app, {
+          persistence: getReactNativePersistence(AsyncStorage)
+        });
+
+        unsubscribe = onAuthStateChanged(auth, (usr) => {
+          setUser(usr);
+          setLoading(false);
+        });
+      } catch (err) {
+        console.error('Auth init error', err);
         setLoading(false);
-      });
-      return () => unsubscribe();
-    } catch (err) {
-      console.error('Auth setup failed', err);
-      // clear loader so UI can render (user will be null)
-      setLoading(false);
-    }
+      }
+    })();
+
+    return () => unsubscribe && unsubscribe();
   }, []);
 
-  const login = (email, pass) => {
-    const authModule = require('firebase/auth');
+  const login = async (email, pass) => {
+    const authModule = await import('firebase/auth');
     const auth = authModule.getAuth(app);
     return authModule.signInWithEmailAndPassword(auth, email, pass);
   };
 
-  const signUp = (email, pass) => {
-    const authModule = require('firebase/auth');
+  const signUp = async (email, pass) => {
+    const authModule = await import('firebase/auth');
     const auth = authModule.getAuth(app);
     return authModule.createUserWithEmailAndPassword(auth, email, pass);
   };
 
-  const logout = () => {
-    const authModule = require('firebase/auth');
+  const logout = async () => {
+    const authModule = await import('firebase/auth');
     const auth = authModule.getAuth(app);
     return authModule.signOut(auth);
   };
