@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "jsEngine": "hermes",
+    "jsEngine": "jsc",
     "plugins": [
       "expo-dev-client"
     ],
@@ -28,7 +28,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.gavenking.theapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
